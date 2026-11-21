@@ -203,4 +203,48 @@
     </footer>
 
 </body>
+
+            <script>
+            async function loadFeaturedProjects() {
+                const container = document.getElementById("projects-container");
+            
+                try {
+                    const response = await fetch(
+                        "https://api.github.com/search/repositories?q=user:2001manju+topic:portfolio&sort=updated&order=desc"
+                    );
+            
+                    if (!response.ok) {
+                        throw new Error("GitHub API request failed");
+                    }
+            
+                    const result = await response.json();
+            
+                    const projects = result.items.filter(
+                        repo => repo.name !== "manjunath.github.io"
+                    );
+            
+                    if (projects.length === 0) {
+                        container.innerHTML = "<p>No featured projects found.</p>";
+                        return;
+                    }
+            
+                    container.innerHTML = projects.map(repo => `
+                        <div class="project-card">
+                            <h3>${repo.name}</h3>
+                            <p>${repo.description || "No description available."}</p>
+                            <p>Language: ${repo.language || "Not specified"}</p>
+                            <a href="${repo.html_url}" target="_blank"
+                               rel="noopener noreferrer">View Project →</a>
+                        </div>
+                    `).join("");
+            
+                } catch (error) {
+                    console.error(error);
+                    container.innerHTML = "<p>Unable to load projects.</p>";
+                }
+            }
+            
+            loadFeaturedProjects();
+            </script>    
+
 </html>
